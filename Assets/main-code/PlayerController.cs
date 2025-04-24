@@ -13,7 +13,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody2D rb;
-    private float xAxis;
+    // Делаем xAxis публичной и статичной для доступа из других скриптов
+    public static float xAxis;
     Animator anim;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -72,4 +73,5 @@ public class PlayerController : MonoBehaviour
 
         anim.SetBool("Jump", !Grounded());
     }
+
 }
