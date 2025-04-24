@@ -14,11 +14,14 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private float xAxis;
+    Animator anim;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -37,6 +40,7 @@ public class PlayerController : MonoBehaviour
     void Move()
     {
         rb.linearVelocity = new Vector2(xAxis * walkSpeed, rb.linearVelocity.y);
+        anim.SetBool("Run", rb.linearVelocity.x != 0 && Grounded());
     }
 
     public bool Grounded()
@@ -65,5 +69,7 @@ public class PlayerController : MonoBehaviour
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce);
         }
+
+        anim.SetBool("Jump", !Grounded());
     }
 }
