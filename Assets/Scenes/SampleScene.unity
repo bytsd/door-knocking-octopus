@@ -131,7 +131,8 @@ GameObject:
   - component: {fileID: 200090357}
   - component: {fileID: 200090356}
   - component: {fileID: 200090355}
-  - component: {fileID: 200090354}
+  - component: {fileID: 200090360}
+  - component: {fileID: 200090359}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Untagged
@@ -139,22 +140,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &200090354
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 200090353}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cf6bbead62b47b4a89ac85f43ff7275, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 100
-  recoilLength: 0.5
-  recoilFactor: 5
-  isRecoiling: 0
 --- !u!61 &200090355
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -199,7 +184,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.8660922, y: 0.92892}
   m_EdgeRadius: 0
 --- !u!50 &200090356
 Rigidbody2D:
@@ -224,9 +209,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!212 &200090357
 SpriteRenderer:
@@ -298,6 +283,71 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &200090359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200090353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e36dcf077447f3e4e8875e75aaad7ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 10
+  recoilLength: 0.5
+  recoilFactor: 5
+  isRecoiling: 0
+  player: {fileID: 1157085170}
+  speed: 1
+  damage: 0
+--- !u!61 &200090360
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200090353}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &223819389
 GameObject:
   m_ObjectHideFlags: 0
@@ -3307,7 +3357,7 @@ GameObject:
   - component: {fileID: 1157085173}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3498,6 +3548,9 @@ MonoBehaviour:
   recoilYSteps: 5
   recoilXSpeed: 100
   recoilYSpeed: 100
+  health: 0
+  maxHealth: 0
+  pState: {fileID: 0}
 --- !u!95 &1157085171
 Animator:
   serializedVersion: 7
@@ -3550,6 +3603,7 @@ MonoBehaviour:
   recoilingX: 0
   recoilingY: 0
   lookingRight: 0
+  invincible: 0
 --- !u!1 &1231110124
 GameObject:
   m_ObjectHideFlags: 0

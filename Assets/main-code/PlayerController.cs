@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Horizontal Movement Settings")]
     [SerializeField] private float walkSpeed = 1;
+    [Space(5)]
 
     //---------------------------------------------------------
 
@@ -17,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int jumpBufferFrames;
     private int airjumpCounter = 0;
     [SerializeField] private int maxAirJumps;
+    [Space(5)]
 
     //---------------------------------------------------------
 
@@ -25,6 +27,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundCheckY = 0.2f;
     [SerializeField] private float groundCheckX = 0.5f;
     [SerializeField] private LayerMask groundLayer;
+    [Space(5)]
 
     //---------------------------------------------------------
 
@@ -32,6 +35,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashTime;
     [SerializeField] private float dashCooldown;
+    [Space(5)]
 
     //---------------------------------------------------------
 
@@ -42,6 +46,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Vector2 SideAttackArea, UpAttackArea, DownAttackArea;
     [SerializeField] LayerMask AttackableLayer;
     [SerializeField] float damage;
+    [Space(5)]
 
     //---------------------------------------------------------
 
@@ -51,10 +56,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float recoilXSpeed = 100;
     [SerializeField] float recoilYSpeed = 100;
     int stepsXRecoiled, stepsYRecoiled;
+    [Space(5)]
 
     //---------------------------------------------------------
 
-    PlayerStateList pState;
+    [Header("Health Settings")]
+    public int health;
+    public int maxHealth;
+    [Space(5)]
+
+    //---------------------------------------------------------
+
+    [HideInInspector] public PlayerStateList pState;
     private Rigidbody2D rb;
     public static float xAxis, yAxis;
     private float gravity;
@@ -64,8 +77,21 @@ public class PlayerController : MonoBehaviour
 
     //---------------------------------------------------------
 
+    public static PlayerController Instance;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+        if(Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+        health = maxHealth;
+    }
+
     void Start()
     {
         pState = GetComponent<PlayerStateList>();
@@ -249,6 +275,26 @@ public class PlayerController : MonoBehaviour
     {
         stepsYRecoiled = 0;
         pState.recoilingY = false;
+    }
+
+    public void TakeDamage(float _damage)
+    {
+        health -= Mathf.RoundToInt(_damage);
+        StartCoroutine(StopTakingDamage());
+    }
+
+    IEnumerator StopTakingDamage()
+    {
+        pState.invincible = true;
+        anim.SetTrigger("TakeDamage");
+        ClampHealth();
+        yield return new WaitForSeconds(1f);
+        pState.invincible = false;
+    }
+
+    void ClampHealth()
+    {
+        health = Mathf.Clamp(health, 0, maxHealth);
     }
 
     public bool Grounded()
