@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 354318774024655526}
   - component: {fileID: 8869763501305384089}
   - component: {fileID: 4857227989241873718}
-  - component: {fileID: 8598191545786528430}
   m_Layer: 0
   m_Name: Up Spell Explosion
   m_TagString: Untagged
@@ -135,15 +134,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 7.2, y: 3.91}
   m_EdgeRadius: 0
---- !u!114 &8598191545786528430
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 83740838191262734}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdbb479b29c808749bcdbf2d57277463, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

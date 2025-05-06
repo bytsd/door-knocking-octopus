@@ -16,8 +16,7 @@ public class Enemy : MonoBehaviour
     protected Rigidbody2D rb;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-
-    protected virtual void Awake()
+    protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         player = PlayerController.Instance;
