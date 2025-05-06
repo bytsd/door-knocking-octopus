@@ -92,7 +92,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float timeBetweenCast = 0.5f;
     float timeSinceCast;
     [SerializeField] float spellDamage; // up and down spell damage
-    [SerializeField] float downSpellSpeed; // down spell speed
     [SerializeField] float downSpellForce = 10f;
 
     [SerializeField] GameObject sideSpellFireball;
@@ -116,7 +115,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
         }
@@ -124,7 +123,7 @@ public class PlayerController : MonoBehaviour
         {
             Instance = this;
         }
-        Health = maxHealth;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
@@ -142,6 +141,9 @@ public class PlayerController : MonoBehaviour
 
         Mana = mana;
         manaStorage.fillAmount = Mana;
+
+        Health = maxHealth;
+
     }
 
     void OnDrawGizmos()
@@ -169,7 +171,7 @@ public class PlayerController : MonoBehaviour
         CastSpell();
     }
 
-    private void OnTriggerEnter2D(Collider2D _other)
+    private void OnTriggerStay2D(Collider2D _other)
     {
         if(_other.GetComponent<Enemy>() != null && !pState.casting)
         {
@@ -216,7 +218,8 @@ public class PlayerController : MonoBehaviour
         pState.dashing = true;
         anim.SetTrigger("Dashing");
         rb.gravityScale = 0;
-        rb.linearVelocity = new Vector2(transform.localScale.x * dashSpeed, 0);
+        int _dir = pState.lookingRight ? 1 : -1;
+        rb.linearVelocity = new Vector2(_dir * dashSpeed, 0);
         yield return new WaitForSeconds(dashTime);
         rb.gravityScale = gravity;
         pState.dashing = false;
@@ -482,7 +485,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator CastCoroutine()
     {
         anim.SetBool("Casting", true);
-        yield return new WaitForSeconds(0.03f);
+        yield return new WaitForSeconds(0.1f);
 
         if(yAxis == 0 || (yAxis < 0 && Grounded()))
         {
@@ -501,7 +504,8 @@ public class PlayerController : MonoBehaviour
 
         else if(yAxis > 0)
         {
-            Instantiate(upSpellExplosion, transform);
+            GameObject explosion = Instantiate(upSpellExplosion, transform);
+            Destroy(explosion, 0.5f);
             rb.linearVelocity = Vector2.zero;
         }
 
@@ -533,29 +537,28 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if(Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0)
+
+        if (JumpBufferCounter > 0 && Grounded() && !pState.jumping)
+        {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce);
+
+            pState.jumping = true;
+        }
+
+        if (!Grounded() && airjumpCounter < maxAirJumps && Input.GetButtonDown("Jump"))
+        {
+            pState.jumping = true;
+
+            airjumpCounter++;
+
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce);
+        }
+
+        if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 3)
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0);
 
             pState.jumping = false;
-        }
-
-        if (!pState.jumping)
-        {
-            if (JumpBufferCounter > 0 && Grounded())
-            {
-                rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce);
-
-                pState.jumping = true;
-            }
-            else if(!Grounded() && airjumpCounter < maxAirJumps && Input.GetButtonDown("Jump"))
-            {
-                pState.jumping = true;
-
-                airjumpCounter++;
-
-                rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce);
-            }
         }
 
         anim.SetBool("Jump", !Grounded());
