@@ -113,6 +113,9 @@ public class PlayerController : MonoBehaviour
 
     public static PlayerController Instance;
 
+    //unlocking
+    public bool unlockedDoubleJump;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -536,6 +539,11 @@ public class PlayerController : MonoBehaviour
             return false;
         }   
     
+    }
+
+    public void AddExtraAirJump()
+    {
+        maxAirJumps++;
     }
 
     void Jump()

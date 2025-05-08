@@ -70,7 +70,7 @@ public class Enemy : MonoBehaviour
         {
             GameObject _orangeBlood = Instantiate(orangeBlood, transform.position, Quaternion.identity);
             Destroy(_orangeBlood, 5.5f);
-            rb.linearVelocity = -_hitForce * recoilFactor * _hitDirection;
+            rb.linearVelocity = _hitForce * recoilFactor * _hitDirection;
         }
     }
 
