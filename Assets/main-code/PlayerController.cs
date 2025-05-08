@@ -159,13 +159,13 @@ public class PlayerController : MonoBehaviour
     {
         GetInput(); 
         UpdateJumpVariables();
+        RestoreTimeScale();
         if (pState.dashing) return;
         Move();
         Jump();
         StartDash();
         Attack();
         Recoil();
-        RestoreTimeScale();
         FlashWhileInvincible();
         Heal();
         CastSpell();
@@ -175,7 +175,7 @@ public class PlayerController : MonoBehaviour
     {
         if(_other.GetComponent<Enemy>() != null && !pState.casting)
         {
-            _other.GetComponent<Enemy>().EnemyHit(spellDamage, (_other.transform.position - transform.position).normalized, -recoilYSpeed);
+            _other.GetComponent<Enemy>().EnemyGetsHit(spellDamage, (_other.transform.position - transform.position).normalized, -recoilYSpeed);
         }
     }
 
@@ -215,6 +215,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator Dash()
     {
         canDash = false;
+        pState.invincible = true;
         pState.dashing = true;
         anim.SetTrigger("Dashing");
         rb.gravityScale = 0;
@@ -225,6 +226,7 @@ public class PlayerController : MonoBehaviour
         pState.dashing = false;
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
+        pState.invincible = false;
     }
 
     void Attack()
@@ -237,34 +239,35 @@ public class PlayerController : MonoBehaviour
 
             if(yAxis == 0 || yAxis < 0 && Grounded())
             {
-                Hit(SideAttackTransform, SideAttackArea, ref pState.recoilingX, recoilXSpeed);
+                int _recoilLeftOrRight = pState.lookingRight ? 1 : -1;
+
+                Hit(SideAttackTransform, SideAttackArea, ref pState.recoilingX, Vector2.right * _recoilLeftOrRight,recoilXSpeed);
             }
             else if(yAxis > 0)
             {
-                Hit(UpAttackTransform, UpAttackArea, ref pState.recoilingY, recoilYSpeed);
+                Hit(UpAttackTransform, UpAttackArea, ref pState.recoilingY, Vector2.up, recoilYSpeed);
             }
             else if(yAxis < 0 && !Grounded())
             {
-                Hit(DownAttackTransform, DownAttackArea, ref pState.recoilingY, recoilYSpeed);
+                Hit(DownAttackTransform, DownAttackArea, ref pState.recoilingY, Vector2.down, recoilYSpeed);
             }
             //На случай если захочу поставить анимации для ударов
         }
     }
 
-    void Hit(Transform _attackTransform, Vector2 _attackArea, ref bool _recoilDir, float _recoilStrength)
+    void Hit(Transform _attackTransform, Vector2 _attackArea, ref bool _recoilBool, Vector2 _recoilDir, float _recoilStrength)
     {
         Collider2D[] objectsToHit = Physics2D.OverlapBoxAll(_attackTransform.position, _attackArea, 0, AttackableLayer);
 
         if(objectsToHit.Length > 0)
         {
-            _recoilDir = true;
+            _recoilBool = true;
         }
         for(int i = 0; i < objectsToHit.Length; i++)
         {
             if (objectsToHit[i].GetComponent<Enemy>() != null)
             {
-                objectsToHit[i].GetComponent<Enemy>().EnemyHit
-                (damage, (transform.position - objectsToHit[i].transform.position).normalized, _recoilStrength);
+                objectsToHit[i].GetComponent<Enemy>().EnemyGetsHit(damage, _recoilDir, _recoilStrength);
 
                 if (objectsToHit[i].CompareTag("Enemy"))
                 {
