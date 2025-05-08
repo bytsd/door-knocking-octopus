@@ -7,28 +7,44 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected float recoilFactor;
     [SerializeField] protected bool isRecoiling = false;
 
-    [SerializeField] protected PlayerController player;
     [SerializeField] protected float speed;
 
     [SerializeField] protected float damage;
+    [SerializeField] protected GameObject orangeBlood;
     
     protected float recoilTimer;
     protected Rigidbody2D rb;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    protected SpriteRenderer sr;
+
+    protected enum EnemyStates
+    {
+        //Crawler
+        Crawler_Idle,
+        Crawler_Flip,
+
+        //Bat
+        Bat_Idle,
+        Bat_Chase,
+        Bat_Stunned,
+        Bat_Death,
+
+        //Charger
+        Charger_Idle,
+        Charger_Surprised,
+        Charger_Charge,
+    }
+    protected EnemyStates currentEnemyState;
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        player = PlayerController.Instance;
+        sr = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     protected virtual void Update()
     {
-        if(health <= 0)
-        {
-            Destroy(gameObject);
-        }
+
         if(isRecoiling)
         {
             if(recoilTimer < recoilLength)
@@ -41,25 +57,42 @@ public class Enemy : MonoBehaviour
                 recoilTimer = 0;
             }
         }
+        else
+        {
+            UpdateEnemyStates();
+        }
     }
 
-    public virtual void EnemyHit(float _damageDone, Vector2 _hitDirection, float _hitForce)
+    public virtual void EnemyGetsHit(float _damageDone, Vector2 _hitDirection, float _hitForce)
     {
         health -= _damageDone;
         if(!isRecoiling)
         {
-            rb.AddForce(-_hitForce * recoilFactor * _hitDirection);
-            isRecoiling = true;
+            GameObject _orangeBlood = Instantiate(orangeBlood, transform.position, Quaternion.identity);
+            Destroy(_orangeBlood, 5.5f);
+            rb.linearVelocity = -_hitForce * recoilFactor * _hitDirection;
         }
     }
 
     protected virtual void OnCollisionStay2D(Collision2D _other)
     {
-        if(_other.gameObject.CompareTag("Player") && !PlayerController.Instance.pState.invincible)
+        if(_other.gameObject.CompareTag("Player") && !PlayerController.Instance.pState.invincible && !PlayerController.Instance.pState.invincible)
         {
             Attack();
             PlayerController.Instance.HitStopTime(0, 5, 0.05f);
         }
+    }
+
+    protected virtual void UpdateEnemyStates() { }
+
+    protected virtual void ChangeState(EnemyStates _newState)
+    {
+        currentEnemyState = _newState;
+    }
+
+    protected virtual void Death(float _destroyTime)
+    {
+        Destroy(gameObject, _destroyTime);
     }
 
     protected virtual void Attack()
