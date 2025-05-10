@@ -92,11 +92,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float timeBetweenCast = 0.5f;
     float timeSinceCast;
     [SerializeField] float spellDamage; // up and down spell damage
-    [SerializeField] float downSpellForce = 10f;
 
     [SerializeField] GameObject sideSpellFireball;
     [SerializeField] GameObject upSpellExplosion;
-    [SerializeField] GameObject downSpellFireball;
     [Space(5)]
 
     //---------------------------------------------------------
@@ -476,25 +474,16 @@ public class PlayerController : MonoBehaviour
         {
             timeSinceCast += Time.deltaTime;
         }
-
-        if(Grounded())
-        {
-            downSpellFireball.SetActive(false);
-        }
-
-        if(downSpellFireball.activeInHierarchy)
-        {
-            rb.linearVelocity += downSpellForce * Vector2.down;
-        }
     }
 
     IEnumerator CastCoroutine()
     {
-        anim.SetBool("Casting", true);
-        yield return new WaitForSeconds(0.1f);
 
         if(yAxis == 0 || (yAxis < 0 && Grounded()))
         {
+            anim.SetBool("Casting", true);
+            yield return new WaitForSeconds(0.1f);
+
             GameObject _fireBall = Instantiate(sideSpellFireball, SideAttackTransform.position, Quaternion.identity);
 
             if(pState.lookingRight)
@@ -506,21 +495,22 @@ public class PlayerController : MonoBehaviour
                 _fireBall.transform.eulerAngles = new Vector2(_fireBall.transform.eulerAngles.x, 180);
             }
             pState.recoilingX = true;
+
+            Mana -= manaSpellCost;
         }
 
-        else if(yAxis > 0)
+        else if(yAxis > 0 && Grounded())
         {
+            anim.SetBool("Casting", true);
+            yield return new WaitForSeconds(0.1f);
+
             GameObject explosion = Instantiate(upSpellExplosion, transform);
             Destroy(explosion, 0.5f);
             rb.linearVelocity = Vector2.zero;
+
+            Mana -= manaSpellCost;
         }
 
-        else if(yAxis < 0 && !Grounded())
-        {
-            downSpellFireball.SetActive(true);
-        }
-
-        Mana -= manaSpellCost;
         yield return new WaitForSeconds(0.35f);
         anim.SetBool("Casting", false);
         pState.casting = false;

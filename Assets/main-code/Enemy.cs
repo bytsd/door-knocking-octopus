@@ -7,13 +7,13 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected float recoilFactor;
     [SerializeField] protected bool isRecoiling = false;
 
-    [SerializeField] protected float speed;
+    [SerializeField] public float speed;
 
-    [SerializeField] protected float damage;
+    [SerializeField] public float damage;
     [SerializeField] protected GameObject orangeBlood;
     
     protected float recoilTimer;
-    protected Rigidbody2D rb;
+    [HideInInspector] public Rigidbody2D rb;
     protected SpriteRenderer sr;
 
     protected enum EnemyStates
@@ -32,6 +32,12 @@ public class Enemy : MonoBehaviour
         Charger_Idle,
         Charger_Surprised,
         Charger_Charge,
+
+        //TB
+        TB_Stage1,
+        TB_Stage2,
+        TB_Stage3,
+        TB_Stage4,
     }
     protected EnemyStates currentEnemyState;
 
@@ -89,6 +95,8 @@ public class Enemy : MonoBehaviour
     {
         currentEnemyState = _newState;
     }
+
+    protected EnemyStates GetCurrentEnemyState => currentEnemyState;
 
     protected virtual void Death(float _destroyTime)
     {
